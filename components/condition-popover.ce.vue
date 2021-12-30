@@ -10,16 +10,25 @@
         overlayClassName="imc-condition-popover--content"
         placement="bottomLeft"
         :trigger="trigger"
+        @click='handleShowVisible'
         @visibleChange="handleVisibleChangeParent"
       >
         <template #content>
-          <div ref="overlay" style="max-height: 350px; overflow: auto; min-width: 240px; padding: 4px">
+          <div
+            ref="overlay"
+            style="
+              max-height: 350px;
+              overflow: auto;
+              min-width: 240px;
+              padding: 4px;
+            "
+          >
             <div v-for="item in optionsState" :key="item.key">
               <a-popover
                 :trigger="childTrigger"
                 v-model:visible="visibleMap[item.key]"
                 :autoAdjustOverflow="isTrue(childAutoAdjustOverflow)"
-                @visibleChange="e => handleVisibleChange(item.key, e)"
+                @visibleChange="(e) => handleVisibleChange(item.key, e)"
                 placement="rightTop"
               >
                 <template #default>
@@ -27,7 +36,9 @@
                     class="imc-condition-popover--overlayItem"
                     :ref="overlayRefMap.titleMap[item.key]"
                     @click="handleClickItem(item)"
-                    :style="{color: activeKey === item.key ? '#1890ff' : '#333'}"
+                    :style="{
+                      color: activeKey === item.key ? '#1890ff' : '#333',
+                    }"
                   >
                     <span>{{ item.label }}</span>
                     <RightOutlined style="color: #999" />
@@ -36,9 +47,19 @@
                 <template #content>
                   <div
                     :ref="overlayRefMap.overlayMap[item.key]"
-                    style="overflow: hidden; position: relative; min-width: 240px"
+                    style="
+                      overflow: hidden;
+                      position: relative;
+                      min-width: 240px;
+                    "
                   >
-                    <div style="font-size: 16px; font-weight: 600; margin-bottom: 8px">
+                    <div
+                      style="
+                        font-size: 16px;
+                        font-weight: 600;
+                        margin-bottom: 8px;
+                      "
+                    >
                       {{ item.label }}
                     </div>
                     <condition-pane
@@ -46,7 +67,9 @@
                       v-bind="item"
                     ></condition-pane>
                   </div>
-                  <div :ref="overlayRefMap.contentMap[`${item.key}-content`]"></div>
+                  <div
+                    :ref="overlayRefMap.contentMap[`${item.key}-content`]"
+                  ></div>
                 </template>
               </a-popover>
             </div>
@@ -55,7 +78,14 @@
         <template #default>
           <span style="display: flex; flex-grow: 1">
             <slot name="icon">
-              <FilterTwoTone style="font-size: 28px; padding-top: 10px; line-height: 24px; margin: 0 8px" />
+              <FilterTwoTone
+                style="
+                  font-size: 28px;
+                  padding-top: 10px;
+                  line-height: 24px;
+                  margin: 0 8px;
+                "
+              />
             </slot>
 
             <div style="display: flex; flex-grow: 1; flex-wrap: wrap">
@@ -66,7 +96,7 @@
                 @click="handleVisibleShow(item.key)"
               >
                 <condition-tag
-                  @close="e => handleCloseTag(index, item)"
+                  @close="(e) => handleCloseTag(index, item)"
                   :tags="item.tags"
                   :label="item.label"
                   :maxTagCount="2"
@@ -80,10 +110,20 @@
 
     <div class="action">
       <slot name="action">
-        <button class="btn reset-btn" v-if="restText" style="margin-right: 8px" @click="handleClear">
+        <button
+          class="btn reset-btn"
+          v-if="restText"
+          style="margin-right: 8px"
+          @click="handleClear"
+        >
           {{ restText }}
         </button>
-        <button class="btn primary-btn" type="primary" v-if="confirmText" @click="handleConfirm">
+        <button
+          class="btn primary-btn"
+          type="primary"
+          v-if="confirmText"
+          @click="handleConfirm"
+        >
           {{ confirmText }}
         </button>
       </slot>
@@ -103,42 +143,42 @@ import {
   nextTick,
   reactive,
   cloneVNode,
-} from 'vue'
-import {Popover} from 'ant-design-vue'
-import conditionPane from './condition-pane.vue'
-import conditionTag from './condition-tag.vue'
-import {FilterTwoTone, RightOutlined} from '@ant-design/icons-vue'
-import {getStyleByString, insetSlot, isTrue} from './utils'
+} from "vue";
+import { Popover } from "ant-design-vue";
+import conditionPane from "./condition-pane.vue";
+import conditionTag from "./condition-tag.vue";
+import { FilterTwoTone, RightOutlined } from "@ant-design/icons-vue";
+import { getStyleByString, insetSlot, isTrue } from "./utils";
 
 export default defineComponent({
   components: {
-    'a-popover': Popover,
+    "a-popover": Popover,
     conditionPane,
     conditionTag,
     FilterTwoTone,
     RightOutlined,
   },
-  emits: ['delete', 'confirm', 'change'],
+  emits: ["delete", "confirm", "change"],
   props: {
     id: {
       type: String,
-      default: '',
+      default: "",
     },
     shadowId: {
       type: String,
-      default: '',
+      default: "",
     },
     title: {
       type: String,
-      default: '',
+      default: "",
     },
     trigger: {
       type: String,
-      default: 'click',
+      default: "click",
     },
     childTrigger: {
       type: String,
-      default: 'click',
+      default: "click",
     },
     options: {
       type: Array,
@@ -150,11 +190,11 @@ export default defineComponent({
     },
     confirmText: {
       type: String,
-      default: '确定',
+      default: "确定",
     },
     restText: {
       type: String,
-      default: '重置',
+      default: "重置",
     },
     wrapStyle: {
       type: [Object, String],
@@ -173,189 +213,202 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  setup(props, {emit, expose}) {
-    const visible = ref(false)
-    const overlay = ref(null)
-    const overlayOutside = ref(null)
-    const overlayModal = ref(null)
-    const optionsState = ref(props.options)
-    const tagsValue = ref(props.defaultValue)
-    const visibleMap = reactive({})
-    const activeKey = ref('')
-    const arrowTop = ref(undefined)
+  setup(props, { emit, expose }) {
+    console.log('20211230 10.34')
+    const visible = ref(false);
+    const overlay = ref(null);
+    const overlayOutside = ref(null);
+    const overlayModal = ref(null);
+    const optionsState = ref(props.options);
+    const tagsValue = ref(props.defaultValue);
+    const visibleMap = reactive({});
+    const activeKey = ref("");
+    const arrowTop = ref(undefined);
 
     const handleVisibleChange = (key, e) => {
-      visibleMap[key] = e
-    }
+      visibleMap[key] = e;
+    };
 
-    const handleVisibleShow = key => {
+    const handleVisibleShow = (key) => {
       setTimeout(() => {
-        visible.value = true
-      })
-      for (let i in visibleMap) {
-        if (i === key) {
-          visibleMap[key] = true
-          activeKey.value = key
-        } else {
-          visibleMap[i] = false
+        visible.value = true;
+
+        for (let i in visibleMap) {
+          if (i === key) {
+            visibleMap[key] = true;
+            activeKey.value = key;
+          } else {
+            visibleMap[i] = false;
+          }
         }
-      }
-    }
+      });
+    };
 
     watch(
       () => props.options,
-      n => {
-        optionsState.value = n
-        props.options.map(item => {
-          visibleMap[item.key] = false
-        })
-      },
-    )
-
-    const handleVisibleChangeParent = e => {
-      console.log(e)
-      visible.value = e
-      if (!e) {
-        activeKey.value = ''
+      (n) => {
+        optionsState.value = n;
+        props.options.map((item) => {
+          visibleMap[item.key] = false;
+        });
       }
-    }
+    );
+
+    const handleVisibleChangeParent = (e) => {
+      console.log(e);
+      visible.value = e;
+      if (!e) {
+        activeKey.value = "";
+      }
+    };
 
     const overlayRefMap = computed(() => {
-      const overlayMap = {}
-      const contentMap = {}
-      const tagsMap = {}
-      const titleMap = {}
-      props.options.forEach(item => {
+      const overlayMap = {};
+      const contentMap = {};
+      const tagsMap = {};
+      const titleMap = {};
+      props.options.forEach((item) => {
         if (!overlayMap[item.key]?.value) {
-          overlayMap[item.key] = ref(null)
+          overlayMap[item.key] = ref(null);
         }
         if (!contentMap[item.key]?.value) {
-          contentMap[`${item.key}-content`] = ref(null)
+          contentMap[`${item.key}-content`] = ref(null);
         }
         if (!tagsMap[item.key]?.value) {
-          tagsMap[item.key] = ref(null)
+          tagsMap[item.key] = ref(null);
         }
         if (!titleMap[item.key]?.value) {
-          titleMap[item.key] = ref(null)
+          titleMap[item.key] = ref(null);
         }
-      })
+      });
       return {
         overlayMap,
         contentMap,
         tagsMap,
         titleMap,
-      }
-    })
+      };
+    });
 
-    const outsideElement = document.querySelector(`#${props.id}`)
-    const outsideOriginChildNodes = outsideElement?.childNodes
+    const outsideElement = document.querySelector(`#${props.id}`);
+    const outsideOriginChildNodes = outsideElement?.childNodes;
     // 动态插入节点 slot-content 为外部挂载提供一个节点
     watchEffect(() => {
       if (overlay.value) {
-        const refStateContent = overlayRefMap.value.contentMap
-        const shadowId = props.shadowId
-        const id = props.id
+        const refStateContent = overlayRefMap.value.contentMap;
+        const shadowId = props.shadowId;
+        const id = props.id;
         for (let i in refStateContent) {
-          let childSlotNode = null
+          let childSlotNode = null;
           if (shadowId) {
-            const _id = id ? `#${id} ` : ''
-            childSlotNode = document.querySelector(`#${shadowId}`)?.shadowRoot?.querySelector(`${_id}[slot=${i}]`)
+            const _id = id ? `#${id} ` : "";
+            childSlotNode = document
+              .querySelector(`#${shadowId}`)
+              ?.shadowRoot?.querySelector(`${_id}[slot=${i}]`);
           } else if (id) {
-            childSlotNode = document.querySelector(`#${id} [slot=${i}]`)
+            childSlotNode = document.querySelector(`#${id} [slot=${i}]`);
           }
           if (!childSlotNode) {
-            const div = document.createElement('div')
-            const [key, content] = i.split('-')
-            div.id = i
-            div.slot = i
-            outsideElement.append(div)
+            const div = document.createElement("div");
+            const [key, content] = i.split("-");
+            div.id = i;
+            div.slot = i;
+            outsideElement.append(div);
           }
         }
       }
-    })
+    });
     watchEffect(() => {
       if (overlay.value && props.id) {
         // 插入自定义节点
-        const refStateContent = overlayRefMap.value.contentMap
-        const outside = outsideElement?.childNodes
+        const refStateContent = overlayRefMap.value.contentMap;
+        const outside = outsideElement?.childNodes;
         if (outside?.length) {
-          const refState = overlayRefMap.value.overlayMap
+          const refState = overlayRefMap.value.overlayMap;
           for (let i in refState) {
-            insetSlot(refState[i].value, i, props.id, props.shadowId)
+            insetSlot(refState[i].value, i, props.id, props.shadowId);
           }
           for (let i in refStateContent) {
             if (refStateContent[i].value?.[0]) {
-              insetSlot(refStateContent[i].value[0], i, props.id, props.shadowId)
+              insetSlot(
+                refStateContent[i].value[0],
+                i,
+                props.id,
+                props.shadowId
+              );
             }
           }
         }
       }
-    })
+    });
 
     // 转化data => tag
-    const getTags = data => {
-      const options = data.options
-      const tags = []
-      options?.forEach(item => {
-        const value = item.value
+    const getTags = (data) => {
+      const options = data.options;
+      const tags = [];
+      options?.forEach((item) => {
+        const value = item.value;
         if (item?.options?.length) {
-          if (typeof value === 'string') {
-            const optionsItem = item?.options?.find(iii => iii.value === value)
-            optionsItem && tags.push(optionsItem)
+          if (typeof value === "string") {
+            const optionsItem = item?.options?.find(
+              (iii) => iii.value === value
+            );
+            optionsItem && tags.push(optionsItem);
           } else {
-            value?.forEach(ii => {
-              const optionsItem = item?.options?.find(iii => iii.value === ii)
-              optionsItem && tags.push(optionsItem)
-            })
+            value?.forEach((ii) => {
+              const optionsItem = item?.options?.find(
+                (iii) => iii.value === ii
+              );
+              optionsItem && tags.push(optionsItem);
+            });
           }
         } else {
-          item.value && tags.push({label: item.value, value: item.label})
+          item.value && tags.push({ label: item.value, value: item.label });
         }
-      })
+      });
       return {
         tags,
         ...data,
-      }
-    }
+      };
+    };
 
     // 更新标签
-    const updateTag = _item => {
-      const _options = _item.options
-      const key = _item.key
-      let _index = undefined
+    const updateTag = (_item) => {
+      const _options = _item.options;
+      const key = _item.key;
+      let _index = undefined;
       const hasTagInTags = tagsValue?.value?.some((item, index) => {
         if (item.key === key) {
-          _index = index
+          _index = index;
         }
-        return item.key === key
-      })
+        return item.key === key;
+      });
 
       nextTick(() => {
-        const hasVal = _item.options.some(item => {
-          return item.value?.length
-        })
+        const hasVal = _item.options.some((item) => {
+          return item.value?.length;
+        });
         if (hasTagInTags) {
           if (hasVal) {
-            const tags = getTags(_item)
-            tagsValue.value[_index] = tags
+            const tags = getTags(_item);
+            tagsValue.value[_index] = tags;
           } else {
-            tagsValue.value.splice(_index, 1)
+            tagsValue.value.splice(_index, 1);
           }
         } else {
           if (hasVal) {
-            const tags = getTags(_item)
-            tagsValue.value.push(tags)
+            const tags = getTags(_item);
+            tagsValue.value.push(tags);
           }
         }
-      })
-    }
+      });
+    };
 
     const handleChange = (val, record, row) => {
-      emit('change', val, record, row)
+      emit("change", val, record, row);
       nextTick(() => {
-        updateTag(row)
-      })
-    }
+        updateTag(row);
+      });
+    };
 
     /**
      * key: 需要更新的key 对应的options
@@ -363,101 +416,107 @@ export default defineComponent({
      * deep: 是否全量替换
      */
     const updateOptions = (key, options, deep = false) => {
-      const originItem = optionsState.value.find(item => item.key === key)
+      const originItem = optionsState.value.find((item) => item.key === key);
       if (originItem) {
         if (deep) {
-          originItem.options = options
+          originItem.options = options;
         } else {
-          const _options = []
-          const _optionsMap = {}
-          options.forEach(item => {
+          const _options = [];
+          const _optionsMap = {};
+          options.forEach((item) => {
             if (item.key) {
-              _optionsMap[item.key] = item
+              _optionsMap[item.key] = item;
             }
-          })
+          });
           if (originItem?.options?.length) {
-            originItem?.options?.forEach(item => {
+            originItem?.options?.forEach((item) => {
               if (_optionsMap[item.key]) {
-                _options.push(Object.assign(item, _optionsMap[item.key]))
+                _options.push(Object.assign(item, _optionsMap[item.key]));
               } else {
-                _options.push(item)
+                _options.push(item);
               }
-            })
-            originItem.options = _options
+            });
+            originItem.options = _options;
           } else {
-            originItem.options = options
+            originItem.options = options;
           }
         }
 
         setTimeout(() => {
-          updateTag(originItem)
-        }, 100)
+          updateTag(originItem);
+        }, 100);
       }
-    }
+    };
 
     const handleCloseTag = (index, row) => {
-      const item = tagsValue.value[index]
-      const key = item.key
-      const t = optionsState.value.find(item => item.key === key)
-      emit('delete', index, row)
-      const _options = []
-      t.options.forEach(item => {
-        item.value = undefined
-        _options.push(item)
-      })
-      t.options = _options
-      tagsValue.value.splice(index, 1)
-    }
+      const item = tagsValue.value[index];
+      const key = item.key;
+      const t = optionsState.value.find((item) => item.key === key);
+      emit("delete", index, row);
+      const _options = [];
+      t.options.forEach((item) => {
+        item.value = undefined;
+        _options.push(item);
+      });
+      t.options = _options;
+      tagsValue.value.splice(index, 1);
+    };
 
     const handleConfirm = () => {
-      emit('confirm', optionsState.value, tagsValue.value)
-    }
+      emit("confirm", optionsState.value, tagsValue.value);
+    };
 
     const clear = () => {
-      optionsState.value?.forEach(item => {
-        const options = item.options
-        const _options = []
-        options?.forEach(ii => {
-          ii.value = undefined
-          _options.push(ii)
-        })
-        item.options = _options
-      })
-      tagsValue.value = []
-    }
+      optionsState.value?.forEach((item) => {
+        const options = item.options;
+        const _options = [];
+        options?.forEach((ii) => {
+          ii.value = undefined;
+          _options.push(ii);
+        });
+        item.options = _options;
+      });
+      tagsValue.value = [];
+    };
 
     const handleClear = () => {
-      clear()
-      emit('clear', optionsState.value)
-    }
+      clear();
+      emit("clear", optionsState.value);
+    };
 
-    const getTagsValue = key => {
-      const obj = {}
-      tagsValue.value.forEach(item => {
-        const _obj = {}
-        item?.options?.forEach(_item => {
-          _obj[_item?.key] = _item?.value
-        })
-        obj[item.key] = _obj
-      })
-      return key ? obj[key] : obj
-    }
+    const getTagsValue = (key) => {
+      const obj = {};
+      tagsValue.value.forEach((item) => {
+        const _obj = {};
+        item?.options?.forEach((_item) => {
+          _obj[_item?.key] = _item?.value;
+        });
+        obj[item.key] = _obj;
+      });
+      return key ? obj[key] : obj;
+    };
 
-    const handleClickItem = item => {
+    const handleClickItem = (item) => {
       if (props.childAutoAdjustOverflow && props.autoArrowTop) {
         setTimeout(() => {
-          const ref = overlayRefMap.value?.titleMap?.[activeKey?.value]
-          console.log(ref.value[0])
-          const rect = ref?.value?.[0]?.getBoundingClientRect()
+          const ref = overlayRefMap.value?.titleMap?.[activeKey?.value];
+          console.log(ref.value[0]);
+          const rect = ref?.value?.[0]?.getBoundingClientRect();
           if (rect?.top) {
-            arrowTop.value = rect.top + 12
+            arrowTop.value = rect.top + 12;
           } else {
-            arrowTop.value = 12
+            arrowTop.value = 12;
           }
-        })
+        });
       }
 
-      activeKey.value = item.key
+      activeKey.value = item.key;
+    };
+
+    const handleShowVisible = () => {
+      setTimeout(() => {
+        visible.value = true
+      })
     }
 
     expose({
@@ -467,7 +526,7 @@ export default defineComponent({
       handleVisibleShow,
       getState: () => optionsState.value,
       getTagsValue,
-    })
+    });
 
     return {
       overlay,
@@ -490,9 +549,10 @@ export default defineComponent({
       arrowTop,
       isTrue,
       visible,
-    }
+      handleShowVisible
+    };
   },
-})
+});
 </script>
 
 <style src="ant-design-vue/lib/checkbox/style/index.css"></style>
@@ -584,7 +644,7 @@ export default defineComponent({
   border-color: #d9d9d9;
 }
 .btn :before {
-  content: '';
+  content: "";
   -webkit-transform: scale(0.9);
   -ms-transform: scale(0.9);
   transform: scale(0.9);
@@ -600,7 +660,7 @@ export default defineComponent({
 }
 
 .imc-condition-popover .btn:before {
-  content: '';
+  content: "";
   -webkit-transform: scale(0.9);
   -ms-transform: scale(0.9);
   transform: scale(0.9);
@@ -636,6 +696,6 @@ export default defineComponent({
   border: 1px solid #1890ff;
 }
 .ant-popover-placement-rightTop > .ant-popover-content > .ant-popover-arrow {
-  top: v-bind('arrowTop');
+  top: v-bind("arrowTop");
 }
 </style>
