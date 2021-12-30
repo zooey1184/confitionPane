@@ -97,9 +97,10 @@
               >
                 <condition-tag
                   @close="(e) => handleCloseTag(index, item)"
+                  :maxTagCount="2"
+                  v-bind="tagParams"
                   :tags="item.tags"
                   :label="item.label"
-                  :maxTagCount="2"
                 ></condition-tag>
               </div>
             </div>
@@ -209,6 +210,10 @@ export default defineComponent({
       default: true,
     },
     params: {
+      type: Object,
+      default: () => ({}),
+    },
+    tagParams: {
       type: Object,
       default: () => ({}),
     },

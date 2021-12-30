@@ -22,6 +22,10 @@ export default defineComponent({
 
     onMounted(() => {
       $setProps('#conditionPopover', {
+        tagParams: {
+          maxMode: 'all',
+          maxTagCount: 4
+        },
         options: [
           {
             key: 'k-177550cb82788dfd488baff06b8e75af',
