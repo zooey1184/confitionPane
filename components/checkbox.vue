@@ -2,7 +2,7 @@
 
 <template>
   <div class="checkgroup-pane">
-    <slot name="action">
+    <slot name="action" v-if='actionable'>
       <div style="display: flex; justify-content: space-between; margin-bottom: 8px">
         <div style="display: flex">
           <span @click="handleAll" style="margin-right: 24px; cursor: pointer; color: #999" v-if="btnAll">{{
@@ -93,7 +93,11 @@ export default defineComponent({
     },
     searchable: {
       type: Boolean,
-      default: true,
+      default: false,
+    },
+    actionable: {
+      type: Boolean,
+      default: false,
     },
     searchAttr: {
       type: Array,

@@ -214,7 +214,6 @@ export default defineComponent({
     },
   },
   setup(props, { emit, expose }) {
-    console.log("20211230 10.48");
     const visible = ref(false);
     const overlay = ref(null);
     const overlayOutside = ref(null);
