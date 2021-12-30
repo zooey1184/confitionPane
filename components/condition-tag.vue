@@ -19,7 +19,10 @@
           </a-tag>
         </span>
         <a-tag v-if="tagList.more.length">
-          <span class="tag-item">{{ tagList.more.length }}{{ maxTagText }}</span>
+          <slot name="more">
+            <span class="tag-item" v-if="maxMode === 'left'">{{ tagList.more.length }}{{ maxTagText }}</span>
+            <span class="tag-item" v-if="maxMode === 'all'">{{ tags.length }}{{ maxTagText }}</span>
+          </slot>
         </a-tag>
       </div>
       <div class="close" v-if="isTrue(closable)" @click.stop="handleClose">
@@ -75,6 +78,10 @@ export default defineComponent({
     color: {
       type: String,
       default: 'default',
+    },
+    maxMode: {
+      type: String,
+      default: 'all',
     },
   },
   setup(props, {emit}) {
