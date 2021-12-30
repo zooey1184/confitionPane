@@ -1,6 +1,24 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "types": ["vite/client"]
-  }
+    "allowJs": true,
+    "target": "esnext",
+    "module": "esnext",
+    "checkJs": true,
+    "strict": true,
+    "jsx": "preserve",
+    "importHelpers": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+    "declaration": true, // 生成声明文件，开启后会自动生成声明文件
+    "declarationDir": "types", // 指定生成声明文件存放目录
+  },
+  "include": ["packages"],
+  "exclude": ["node_modules"]
 }

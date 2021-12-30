@@ -1,0 +1,7 @@
+{
+  "components/index.ce.ts": {
+    "file": "index.umd.js",
+    "src": "components/index.ce.ts",
+    "isEntry": true
+  }
+}
