@@ -10,7 +10,7 @@
         overlayClassName="imc-condition-popover--content"
         placement="bottomLeft"
         :trigger="trigger"
-        @click='handleShowVisible'
+        @click="handleShowVisible"
         @visibleChange="handleVisibleChangeParent"
       >
         <template #content>
@@ -214,7 +214,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit, expose }) {
-    console.log('20211230 10.34')
+    console.log("20211230 10.48");
     const visible = ref(false);
     const overlay = ref(null);
     const overlayOutside = ref(null);
@@ -256,10 +256,12 @@ export default defineComponent({
 
     const handleVisibleChangeParent = (e) => {
       console.log(e);
-      visible.value = e;
-      if (!e) {
-        activeKey.value = "";
-      }
+      setTimeout(() => {
+        visible.value = e;
+        if (!e) {
+          activeKey.value = "";
+        }
+      });
     };
 
     const overlayRefMap = computed(() => {
@@ -515,9 +517,9 @@ export default defineComponent({
 
     const handleShowVisible = () => {
       setTimeout(() => {
-        visible.value = true
-      })
-    }
+        visible.value = true;
+      });
+    };
 
     expose({
       updateTag,
@@ -549,7 +551,7 @@ export default defineComponent({
       arrowTop,
       isTrue,
       visible,
-      handleShowVisible
+      handleShowVisible,
     };
   },
 });
